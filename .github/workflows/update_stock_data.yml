@@ -1,0 +1,32 @@
+name: Update Stock Data
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 每天凌晨1點運行
+  workflow_dispatch:  # 允許手動觸發
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twstock pandas
+    - name: Run script
+      run: python your_script_name.py
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update stock data" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
